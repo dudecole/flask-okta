@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+<p>
+    {% include "group-list.html" %}
+</p>
+
+<p>
+    {% include "task-table.html" %}
+</p>
+{% endblock %}

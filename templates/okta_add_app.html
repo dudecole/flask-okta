@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+<p>
+<form class="pure-form pure-form-stacked" action="/okta_add_app" method="POST">
+    <fieldset>
+        <legend> {{ title }} </legend>
+            <label>App Name</label>
+                <input type="text" name="app_name" id="app_name">
+            <label>URL</label>
+                <input type="text" name="url" id="url">
+            <label>Redirect URL</label>
+                <input type="text" name="redirect_url" id="redirect_url">
+            <input type="submit" value="Submit">
+    </fieldset>
+</form>
+</p>
+</div>
+
+<p>
+    {% include "task-table.html" %}
+</p>
+
+{% endblock %}

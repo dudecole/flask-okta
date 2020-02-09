@@ -1,0 +1,30 @@
+<!--{#% block head %#}-->
+<!--  <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">-->
+<!--{#% endblock %#}-->
+
+<div class="container-fluid">
+
+<div class="dropdown-divider"></div>
+<p>
+Recent Tasks
+<table class="pure-table">
+    <tr>
+        <th>Task ID</th>
+        <th>Product</th>
+        <th>Task Details</th>
+        <th>Task Stage</th>
+        <th>Requested</th>
+    </tr>
+
+    {% for task in tasks%}
+    <tr {% if loop.index % 2 != 0 %} class="pure-table-odd" {% endif %}>
+        <td> {{ task.id }} </td>
+        <td> {{ task.product }} </td>
+        <td> {{ task.task_details }} </td>
+        <td> {{ task.task_stage }} </td>
+        <td> {{ task.date_created.date()}} </td>
+    </tr>
+    {% endfor %}
+</table>
+</p>
+</div>

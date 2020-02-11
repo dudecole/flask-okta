@@ -15,8 +15,8 @@ app.config["OIDC_SCOPES"] = ["openid", "email", "profile"]
 app.config["SECRET_KEY"] = "{{ LONG_RANDOM_STRING }}"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-okta_org_url = "{{ okta_org_url }}"
-okta_auth_token = "{{ okta_auth_toke }}"
+okta_org_url = "https://dev-851814.okta.com"
+okta_auth_token = "00vhnNlDXaOhDUWn-DicSoQCsTOdieLrfIfLaJPK-9"
 
 oidc = OpenIDConnect(app)
 db = SQLAlchemy(app)

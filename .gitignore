@@ -9,3 +9,9 @@ venv
 
 # pycharm idea
 .idea
+
+# vagrant temp directory
+.vagrant
+
+# default log files
+*.log

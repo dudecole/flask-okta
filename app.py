@@ -71,7 +71,6 @@ def before_request():
         #     p.pprint(type(member_group[0].__dict__))
 
 
-
 @app.route("/")
 def index():
     return render_template('index.html',
@@ -152,4 +151,4 @@ def others():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=80)

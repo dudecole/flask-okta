@@ -1,11 +1,14 @@
 $script = <<-SCRIPT
     #sudo apt update -y
     #sudo apt install -y python3-pip
-    sudo yum -y update
-    sudo yum -y install python3-pip
+    yum -y update
+    yum -y install python3-pip docker docker-
     pip3 install --upgrade pip
-    pip3 install wheel
+    pip3 install wheel docker-compose
     pip3 install -r /vagrant/vagrant-requirements.txt
+
+    systemctl enable docker.service
+    systemctl start docker.service
 
     if [ ! -e /etc/pki/ca-trust/source/anchors/zscaler.cer ]
     then
@@ -16,6 +19,7 @@ $script = <<-SCRIPT
     if ! grep -q 'REQUESTS_CA_BUNDLE' /home/vagrant/.bashrc
     then
         echo 'export REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt' >> /home/vagrant/.bashrc
+        echo 'export SSL_CERT_FILE=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
     fi
 
  #   cd /vagrant
@@ -26,14 +30,11 @@ SCRIPT
 Vagrant.configure("2") do |config|
   #config.vm.box = "ubuntu/trusty64"
   config.vm.box = "bento/centos-7.4"
-  config.vm.network "public_network", #ip: "192.168.1.101",
+  config.vm.network "public_network",
     use_dhcp_assigned_default_route: true
-   # netmask: "255.255.255.0", auto_config: false
-   # use_dhcp_assigned_default_route: true
-# config.vm.network "private_network", ip: "192.168.56.143"
-  #config.vm.network "forwarded_port", guest: 8000, host: 8000
-  #config.vm.network "forwarded_port", guest: 5000, host: 5000
-  #config.vm.network "forwarded_port", guest: 443, host: 443
+  config.vm.network "forwarded_port", guest: 8000, host: 8000
+  config.vm.network "forwarded_port", guest: 5000, host: 5000
+  config.vm.network "forwarded_port", guest: 443, host: 443
   config.vm.network "forwarded_port", guest: 80, host: 80
 
   config.vm.provider "virtualbox" do |vb|
@@ -45,8 +46,8 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision "shell", inline: $script
-  config.vm.provision :docker
-  config.vm.provision :docker_compose
+#  config.vm.provision :docker
+#  config.vm.provision :docker_compose
 #  config.vm.provision "shell", inline: "gunicorn -w 2 -b 0.0.0.0:8000 --chdir /vagrant app:app"
 #  config.vm.provision :docker_compose #, yml: "/vagrant/docker-compose.yml", run: "always"
 end

@@ -12,3 +12,4 @@ okta==0.0.4
 waitress==1.4.3
 #httplib2.system-ca-certs-locater==0.1.2
 gunicorn>=19.8.1
+Flask-Migrate==2.5.2

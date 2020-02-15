@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, g, url_for
 from flask_sqlalchemy import SQLAlchemy
+# from flask_migrate import Migrate
 from datetime import datetime
 from flask_oidc import OpenIDConnect
 from okta import UsersClient, UserGroupsClient
@@ -11,7 +12,7 @@ app = Flask(__name__)
 app.config["OIDC_CLIENT_SECRETS"] = "client_secrets.json"
 app.config["OIDC_COOKIE_SECURE"] = False
 app.config["OIDC_CALLBACK_ROUTE"] = "/authorization-code/callback"
-app.config["OIDC_SCOPES"] = ["openid", "email", "profile"]
+app.config["OIDC_SCOPES"] = ["openid", "email", "profile", "groups"]
 app.config["SECRET_KEY"] = "{{ LONG_RANDOM_STRING }}"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -20,30 +21,35 @@ okta_auth_token = "00vhnNlDXaOhDUWn-DicSoQCsTOdieLrfIfLaJPK-9"
 
 oidc = OpenIDConnect(app)
 db = SQLAlchemy(app)
+# migrate = Migrate(app, db)
+
 okta_user_client = UsersClient(okta_org_url,
                           okta_auth_token)
 okta_group_client = UserGroupsClient(okta_org_url,
                           okta_auth_token)
 
 
-user_groups = [
-    {'okta':[
-        'okta_add_app',
-        'okta_aws_console',
-        'another_test'
-    ]},
-    {'teams':[
-        'onboard',
-        'add_channel'
-    ]},
-]
+# user_groups = [
+#     {'okta':[
+#         'okta_add_app',
+#         'okta_aws_console',
+#         'another_test'
+#     ]},
+#     {'teams':[
+#         'onboard',
+#         'add_channel'
+#     ]},
+# ]
 
 
 class RecentTasks(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
     product = db.Column(db.String(50), nullable=False)
     task_details = db.Column(db.String(500), nullable=True)
     task_stage = db.Column(db.String(50), nullable=True)
+    task_requester = db.Column(db.String(50), nullable=True)
+    task_approver = db.Column(db.String(50), nullable=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -54,21 +60,11 @@ class RecentTasks(db.Model):
 def before_request():
     if oidc.user_loggedin:
         g.user = okta_user_client.get_user(oidc.user_getfield("sub"))
-        # g.group = okta_group_client.get_groups()
+        print(g.__dict__)
+        print(g.oidc_id_token['groups'])
+        g.groups = g.oidc_id_token['groups']
     else:
         g.user = None
-
-        # member_groups = okta_group_client.get_groups(query="okta")
-        # print(member_groups)
-        # for group in member_groups:
-        #     print(group.__dict__)
-        #     print(type(group.links.id))
-
-
-        # for group in g.group:
-        #     print("group_name: {}:".format(group.profile.name))
-        #     member_group = okta_group_client.get_groups(query=group.profile.name)
-        #     p.pprint(type(member_group[0].__dict__))
 
 
 @app.route("/")
@@ -135,7 +131,7 @@ def okta():
     return render_template("okta.html",
                            title="Okta",
                            tasks=tasks,
-                           user_groups=user_groups)
+                           okta_groups=g.groups)
 
 
 @app.route('/teams')

@@ -1,16 +1,16 @@
 <div class="container-fluid">
 <p>
 {{ title }} Automations
-{% for group in user_groups %}
-    {% for group_title in group %}
-        {% if group_title == title|lower  %}
-            {% for sub_group in group[group_title] %}
+{% for group in g.groups %}
+        {% if title|lower in group  %}
+        {% set group_no_unders = group.replace('_', ' ') %}
+
               <ul>
-                 <li> <a href="{{ sub_group|lower }}">{{ sub_group|replace('_',' ')}}</a></li>
+                 <li> <a href="{{ group|lower }}">{{ group_no_unders|title }}</a></li>
               </ul>
-            {% endfor %}
         {% endif %}
-    {% endfor %}
 {% endfor %}
 </p>
 </div>
+
+

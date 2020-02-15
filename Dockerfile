@@ -5,6 +5,6 @@ VOLUME /app
 WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip install -r /app/requirements.txt
-EXPOSE 80
+EXPOSE 5000
 COPY . /app
-CMD [ "gunicorn"  , "-b", "0.0.0.0:80", "app:app" ]
+CMD [ "gunicorn"  , "-b", "0.0.0.0:5000", "app:app" ]

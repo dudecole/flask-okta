@@ -6,7 +6,9 @@ services:
     build: .
     expose:
       - "8000"
-#    links:
+      - "5000"
+
+    #    links:
 #      - sqlite3:sqlite3
     volumes:
       - .:/app

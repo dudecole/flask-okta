@@ -1,0 +1,10 @@
+<div class="container-fluid">
+<p>
+
+    {% for group in g.group_list %}
+    <ul>
+        <li><a href="{{ group|lower }}">{{ group }} Automations</a></li>
+    </ul>
+    {% endfor %}
+</p>
+</div>

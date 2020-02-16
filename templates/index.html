@@ -16,11 +16,7 @@
     <p>Welcome <i>{{ g.user.profile.firstName }} {{ g.user.profile.lastName }}!</i></p>
     </p>
     <p>
-        {% for group in okta_user %}
-        <ul>
-            <li><a href="{{ group|lower }}">{{ group }} Automations</a></li>
-        </ul>
-        {% endfor %}
+        {% include "groups.html" %}
     </p>
     {% else %}
     <p>

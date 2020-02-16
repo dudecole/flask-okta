@@ -60,18 +60,28 @@ class RecentTasks(db.Model):
 def before_request():
     if oidc.user_loggedin:
         g.user = okta_user_client.get_user(oidc.user_getfield("sub"))
-        print(g.__dict__)
-        print(g.oidc_id_token['groups'])
+        # print(g.__dict__)
+        # print(g.oidc_id_token['groups'])
         g.groups = g.oidc_id_token['groups']
+        g.group_list = base_groups(g.groups)
+        print(g.group_list)
+
     else:
         g.user = None
+
+
+def base_groups(user_groups):
+    group_titles = []
+    for group in user_groups:
+        if group not in group_titles:
+            group_titles.append((group.split('_')[0]).title())
+    return group_titles
 
 
 @app.route("/")
 def index():
     return render_template('index.html',
-                           title="Automation Dashboard",
-                           okta_user=['Okta', 'Teams', 'Others'])
+                           title="Automation Dashboard")
 
 
 @app.route("/dashboard")
@@ -131,7 +141,7 @@ def okta():
     return render_template("okta.html",
                            title="Okta",
                            tasks=tasks,
-                           okta_groups=g.groups)
+                           user_groups=g.groups)
 
 
 @app.route('/teams')

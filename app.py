@@ -30,19 +30,6 @@ okta_group_client = UserGroupsClient(okta_org_url,
                           okta_auth_token)
 
 
-# user_groups = [
-#     {'okta':[
-#         'okta_add_app',
-#         'okta_aws_console',
-#         'another_test'
-#     ]},
-#     {'teams':[
-#         'onboard',
-#         'add_channel'
-#     ]},
-# ]
-
-
 class RecentTasks(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -61,13 +48,9 @@ class RecentTasks(db.Model):
 def before_request():
     if oidc.user_loggedin:
         g.user = okta_user_client.get_user(oidc.user_getfield("sub"))
-        print(g.__dict__)
-        # print(g.oidc_id_token['groups'])
         g.username = g.oidc_id_token['preferred_username']
         g.groups = g.oidc_id_token['groups']
         g.group_list = base_groups(g.groups)
-        print(g.group_list)
-        print(g.username)
 
     else:
         g.user = None
@@ -129,8 +112,9 @@ def okta_add_app():
 
         except:
             return "There was an issue adding your url"
+        # .order_by(MyEntity.my_date.desc()).limit(3).all()
     else:
-        tasks = RecentTasks.query.order_by(RecentTasks.date_created).all()
+        tasks = RecentTasks.query.order_by(RecentTasks.date_created.desc()).limit(5).all()
         return render_template("okta_add_app.html",
                                title=title,
                                tasks=tasks,

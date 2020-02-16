@@ -13,19 +13,21 @@
 <!--            <h5>{{ g.user.profile.firstName }}-->
 <!--                {{ g.user.profile.lastName }}-->
 <!--            </h5>-->
-    <p>Welcome <i>{{ g.user.profile.firstName }} {{ g.user.profile.lastName }}!</i></p>
+            <p>Welcome <i>{{ g.user.profile.firstName }} {{ g.user.profile.lastName }}!</i></p>
+
+            <p>
+                {% include "groups.html" %}
+            </p>
+
+        {% else %}
+            <p>
+                Welcome Guest!
+            </p>
+            <p><i>"I aint got a lot of money, all i got is time and the reason to rhyme. I don't need a lot of money...
+                all i need is you.."  --Slightly Stoopid</i>
+            </p>
+        {% endif %}
     </p>
-    <p>
-        {% include "groups.html" %}
-    </p>
-    {% else %}
-    <p>
-        Welcome Guest!
-    </p>
-    <p><i>"I aint got a lot of money, all i got is time and the reason to rhyme. I don't need a lot of money...
-        all i need is you.."  --Slightly Stoopid</i>
-    </p>
-    {% endif %}
 
 
 

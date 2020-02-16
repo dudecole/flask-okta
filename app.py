@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_oidc import OpenIDConnect
 from okta import UsersClient, UserGroupsClient
+import json
 from okta.framework import ApiClient
 
 import pprint as p
@@ -60,11 +61,13 @@ class RecentTasks(db.Model):
 def before_request():
     if oidc.user_loggedin:
         g.user = okta_user_client.get_user(oidc.user_getfield("sub"))
-        # print(g.__dict__)
+        print(g.__dict__)
         # print(g.oidc_id_token['groups'])
+        g.username = g.oidc_id_token['preferred_username']
         g.groups = g.oidc_id_token['groups']
         g.group_list = base_groups(g.groups)
         print(g.group_list)
+        print(g.username)
 
     else:
         g.user = None
@@ -107,17 +110,17 @@ def logout():
 def okta_add_app():
     title = "Okta Add Application"
     if request.method == 'POST':
-        task_url = request.form['url']
-        app_name = request.form['app_name']
-        redirect_url = request.form['redirect_url']
-        task_details = "task_url: {}; " \
-                       "app_name: {}; " \
-                       "redirect_url: {}; ".format(task_url,
-                                                   app_name,
-                                                   redirect_url)
 
+        task_details = dict()
+        task_details['app_url'] = request.form['url']
+        task_details['app_name']= request.form['app_name']
+        task_details['redirect_url'] = request.form['redirect_url']
+
+        p.pprint(task_details)
+        print(type(task_details))
         new_task = RecentTasks(product=title,
-                               task_details=task_details,
+                               task_details=json.dumps(task_details),
+                               task_requester=g.username,
                                task_stage='Submitted')
         try:
             db.session.add(new_task)

@@ -11,21 +11,22 @@ Recent Tasks
     <tr>
         <th>Task ID</th>
         <th>Product</th>
+        <th>Task Requester</th>
         <th>Task Details</th>
         <th>Task Stage</th>
-        <th>Requested</th>
+        <th>Date Requested</th>
     </tr>
 
     {% for task in tasks%}
     <tr {% if loop.index % 2 != 0 %} class="pure-table-odd" {% endif %}>
         <td> {{ task.id }} </td>
         <td> {{ task.product }} </td>
+        <td> {{ task.task_requester }} </td>
         <td> {{ task.task_details }} </td>
         <td> {{ task.task_stage }} </td>
-        <td> {{ task.date_created.date()}} </td>
+        <td> {{ task.date_created }} </td>
     </tr>
     {% endfor %}
 </table>
 </p>
 </div>
-

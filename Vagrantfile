@@ -1,13 +1,7 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
 $script = <<-SCRIPT
-
-    yum -y update
-
-    yum -y install python3-pip
-
-    pip3 install --upgrade pip
-    pip3 install wheel
-    pip3 install -r /vagrant/vagrant-requirements.txt
-
 
     if [ ! -e /etc/pki/ca-trust/source/anchors/zscaler.cer ]
     then
@@ -15,46 +9,58 @@ $script = <<-SCRIPT
         update-ca-trust
     fi
 
-    if ! grep -q 'REQUESTS_CA_BUNDLE' /home/vagrant/.bashrc
+    yum -y install python3-pip
+
+    pip3 install --upgrade pip
+    pip3 install wheel
+    pip3 install -r /vagrant/vagrant-requirements.txt
+
+    # Eschew zScaler
+    if ! grep -q 'zscaler.pem' /home/vagrant/.bashrc
     then
-        echo 'export REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt' >> /home/vagrant/.bashrc
-        echo 'export SSL_CERT_FILE=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
+       echo 'export HTTPLIB2_CA_CERTS=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
+       echo 'export SSL_CERT_FILE=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
+       echo 'export REQUESTS_CA_BUNDLE=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
     fi
 
 SCRIPT
 
 $docker_script = <<-SCRIPT
-    sudo apt update -y
-    sudo apt install -y python3-pip
 
-#    vagrant plugin install vagrant-docker-compose
+    if [ ! -e /etc/pki/ca-trust/source/anchors/zscaler.cer ]
+    then
+        cp /vagrant/Zscaler.cer /etc/pki/ca-trust/source/anchors/zscaler.cer
+        sudo update-ca-trust
+    fi
 
-#    yum -y remove docker \
-#                  docker-client \
-#                  docker-client-latest \
-##                  docker-common \
-#                  docker-latest \
-#                  docker-latest-logrotate \
-#                  docker-logrotate \
-#                  docker-engine
+    # Eschew zScaler
+    if ! grep -q 'zscaler.pem' /home/vagrant/.bashrc
+    then
+        echo 'export HTTPLIB2_CA_CERTS=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
+        echo 'export HTTPLIB2_CA_CERTS=/vagrant/zscaler.pem' >> ~/.bashrc
 
-#    yum -y install -y yum-utils \
-#    device-mapper-persistent-data \
-#    lvm2
+        echo 'export SSL_CERT_FILE=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
+        echo 'export SSL_CERT_FILE=/vagrant/zscaler.pem' >> ~/.bashrc
 
-#    yum-config-manager \
-#    --add-repo \
-#    https://download.docker.com/linux/centos/docker-ce.repo
+        echo 'export REQUESTS_CA_BUNDLE=/vagrant/zscaler.pem' >> /home/vagrant/.bashrc
+        echo 'export REQUESTS_CA_BUNDLE=/vagrant/zscaler.pem' >> ~/.bashrc
 
-#    yum -y install docker-ce docker-ce-cli containerd.io
-#    sudo usermod -aG docker $USER
+    fi
 
-#    sudo systemctl start docker
-#    systemctl enable docker.service
+    if ! which docker
+    then
+        curl -fsSL https://get.docker.com | sudo bash -s
+        systemctl enable docker
+        systemctl start docker
+        usermod -aG docker vagrant
+    fi
 
+    if ! which docker-compose
+    then
+        yum install -y python3-pip
+        pip3 install docker-compose
+    fi
 
-#    sudo curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-#    sudo chmod +x /usr/local/bin/docker-compose
 
 SCRIPT
 
@@ -78,9 +84,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "docker" do |docker|
-      docker.vm.box = "ubuntu/bionic64"
-    #  config.vm.network "public_network",
-    #    use_dhcp_assigned_default_route: true
+      docker.vm.box = "bento/centos-7.4"
       docker.vm.network "forwarded_port", guest: 8000, host: 8000
       docker.vm.network "forwarded_port", guest: 5000, host: 5000
       docker.vm.network "forwarded_port", guest: 443, host: 443
@@ -95,8 +99,6 @@ Vagrant.configure("2") do |config|
       end
 
       docker.vm.provision "shell", inline: $docker_script
-      docker.vm.provision :docker
-      docker.vm.provision :docker_compose
   end
 end
 

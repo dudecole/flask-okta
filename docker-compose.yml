@@ -7,11 +7,21 @@ services:
     expose:
       - "8000"
       - "5000"
+    environment:
+      - FLASK_ENVIRONMENT=development
+      - FLASK_ENV=development
+      - POST_DEPLOYMENT_ENVIRONMENT=local
+      - HTTPLIB2_CA_CERTS=/zscaler.pem
+      - SSL_CERT_FILE=/zscaler.pem
+      - REQUESTS_CA_BUNDLE=/zscaler.pem
 
     #    links:
 #      - sqlite3:sqlite3
     volumes:
       - .:/app
+      - ${PWD}/zscaler.pem:/zscaler.pem
+      - ${PWD}/container-files/client_secrets.json:/client_secrets.json
+
 #    env_file:
 #      - .env
     #command: /usr/local/bin/gunicorn -w 2 -b 0.0.0.0:8000 app:app

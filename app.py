@@ -120,6 +120,14 @@ def okta_add_app():
                                tasks=tasks,
                                text="some text .. its just for fun")
 
+@app.route('/tasks/<int:id>', methods=['GET'])
+@oidc.require_login
+def tasks(id):
+    # single_task = RecentTasks.query.order_by(RecentTasks.date_created).all()
+    return "here is the single record {}".format(id) #`render_template("tasks.html",
+                           #title="Tasks",
+                           #tasks=single_task)
+
 
 @app.route('/okta', methods=['GET'])
 @oidc.require_login
@@ -144,4 +152,4 @@ def others():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=80)
+    app.run(debug=True, host='0.0.0.0', port=5000)

@@ -67,7 +67,6 @@ def okta_add_app():
         task_details['app_name']= request.form['app_name']
         task_details['redirect_url'] = request.form['redirect_url']
 
-        p.pprint(task_details)
         print(type(task_details))
         new_task = RecentTasks(product=title,
                                task_details=json.dumps(task_details),

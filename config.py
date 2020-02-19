@@ -18,7 +18,7 @@ class BaseConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
 
     # This is for sqlite
-    SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI'] #'sqlite:///test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 
 
     # Okta Env Variables

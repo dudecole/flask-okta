@@ -1,33 +1,25 @@
 from flask import Flask, render_template, request, redirect, g, url_for
 from flask_sqlalchemy import SQLAlchemy
+from config import BaseConfig
 # from flask_migrate import Migrate
 from datetime import datetime
 from flask_oidc import OpenIDConnect
-from okta import UsersClient, UserGroupsClient
+from okta import UsersClient
 import json
-from okta.framework import ApiClient
 
-import pprint as p
 
 app = Flask(__name__)
-app.config["OIDC_CLIENT_SECRETS"] = "client_secrets.json"
-app.config["OIDC_COOKIE_SECURE"] = False
-app.config["OIDC_CALLBACK_ROUTE"] = "/authorization-code/callback"
-app.config["OIDC_SCOPES"] = ["openid", "email", "profile", "groups"]
-app.config["SECRET_KEY"] = "{{ LONG_RANDOM_STRING }}"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-okta_org_url = "https://dev-851814.okta.com"
-okta_auth_token = "00vhnNlDXaOhDUWn-DicSoQCsTOdieLrfIfLaJPK-9"
+app.config.from_object(BaseConfig)
 
 oidc = OpenIDConnect(app)
 db = SQLAlchemy(app)
 # migrate = Migrate(app, db)
 
-okta_user_client = UsersClient(okta_org_url,
-                          okta_auth_token)
-okta_group_client = UserGroupsClient(okta_org_url,
-                          okta_auth_token)
+# from models import RecentTasks
+
+okta_user_client = UsersClient(BaseConfig.okta_org_url,
+                          BaseConfig.okta_auth_token)
+
 
 
 class RecentTasks(db.Model):

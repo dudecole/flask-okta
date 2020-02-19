@@ -15,16 +15,15 @@ services:
       - SSL_CERT_FILE=/zscaler.pem
       - REQUESTS_CA_BUNDLE=/zscaler.pem
 
+    env_file:
+      - .env
+
     #    links:
-#      - sqlite3:sqlite3
+#      - postgres:postgres
     volumes:
       - .:/app
       - ${PWD}/zscaler.pem:/zscaler.pem
       - ${PWD}/container-files/client_secrets.json:/client_secrets.json
-
-#    env_file:
-#      - .env
-    #command: /usr/local/bin/gunicorn -w 2 -b 0.0.0.0:8000 app:app
 
   nginx:
     restart: always
@@ -32,25 +31,28 @@ services:
     ports:
       - "80:80"
     volumes:
-      - .:/app/static
+#      - .:/app/static
       - .:/app
     links:
       - web:web
-#
-#  data:
-#    image: postgres:latest
-#    volumes:
-#      - db-data:/var/lib/postgresql/data
-#    command: "true"
-#
-#  postgres:
-#    restart: always
-#    image: postgres:latest
-#    volumes:
-#      - db-data:/var/lib/postgresql/data
-#    ports:
-#      - "5432:5432"
 
-#volumes:
-##  db-data:
+  data:
+    image: postgres:latest
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    command: "true"
+
+  postgres:
+    restart: always
+    image: postgres:latest
+    env_file:
+      - .env
+
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db-data:
 #  web-data:

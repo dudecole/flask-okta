@@ -1,39 +1,15 @@
-from flask import Flask, render_template, request, redirect, g, url_for
-from flask_sqlalchemy import SQLAlchemy
+from flask import render_template, request, redirect, g, url_for
 from config import BaseConfig
-# from flask_migrate import Migrate
-from datetime import datetime
 from flask_oidc import OpenIDConnect
 from okta import UsersClient
 import json
+from models import db, RecentTasks
+from __init__ import app
 
-
-app = Flask(__name__)
-app.config.from_object(BaseConfig)
 
 oidc = OpenIDConnect(app)
-db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
-
-# from models import RecentTasks
-
 okta_user_client = UsersClient(BaseConfig.okta_org_url,
-                          BaseConfig.okta_auth_token)
-
-
-
-class RecentTasks(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-    product = db.Column(db.String(50), nullable=False)
-    task_details = db.Column(db.String(500), nullable=True)
-    task_stage = db.Column(db.String(50), nullable=True)
-    task_requester = db.Column(db.String(50), nullable=True)
-    task_approver = db.Column(db.String(50), nullable=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return '<Task %r>' % self.id
+                               BaseConfig.okta_auth_token)
 
 
 @app.before_request
@@ -111,6 +87,7 @@ def okta_add_app():
                                title=title,
                                tasks=tasks,
                                text="some text .. its just for fun")
+
 
 @app.route('/tasks/<int:id>', methods=['GET'])
 @oidc.require_login

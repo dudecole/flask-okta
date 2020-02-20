@@ -1,10 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from __init__ import app
+from flask_migrate import Migrate
 
+# app.config.from_object(BaseConfig[''])
 
 db = SQLAlchemy(app)
-
+migrate = Migrate(app, db)
 
 class RecentTasks(db.Model):
 

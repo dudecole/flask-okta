@@ -12,13 +12,13 @@ class BaseConfig(object):
     POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
     DB_SERVICE = os.environ['DB_SERVICE']
     DB_PORT = os.environ['DB_PORT']
-    # SQLALCHEMY_DATABASE_URI = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-    #     POSTGRES_USER, POSTGRES_PASSWORD, DB_SERVICE, DB_PORT, POSTGRES_DB
-    # )
+    SQLALCHEMY_DATABASE_URI = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+        POSTGRES_USER, POSTGRES_PASSWORD, DB_SERVICE, DB_PORT, POSTGRES_DB
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ['SQLALCHEMY_TRACK_MODIFICATIONS']
 
     # This is for sqlite
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    #SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 
 
     # Okta Env Variables
